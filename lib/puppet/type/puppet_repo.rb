@@ -14,9 +14,26 @@ Puppet::Type.newtype(:puppet_repo) do
 
   newproperty(:display_name)
   newproperty(:description)
+
+  newproperty(:feed) do
+    validate do |v|
+      raise 'feed must be a valid url' unless v =~ URI::regexp
+    end
+  end
+  
   newproperty(:notes) do
     validate do |v|
       raise 'notes must be a map' unless v.is_a? Hash
+    end
+  end
+
+  newproperty(:validate)
+    munge do |v|
+      v.to_s == 'true'
+    end
+
+    validate do |v|
+      raise 'serve_http must be a boolean value' unless (['true', 'false'] & [v.to_s]).any?
     end
   end
 
@@ -55,9 +72,18 @@ Puppet::Type.newtype(:puppet_repo) do
     end
   end
 
-  newproperty(:feed) do
+  newproperty(:rel_url)
+  newproperty(:feed_ca_cert)
+  newproperty(:feed_cert)
+  newproperty(:feed_key)
+
+  newproperty(:verify_ssl) do
+    munge do |v|
+      v.to_s == 'true'
+    end
+
     validate do |v|
-      raise 'feed must be a valid url' unless v =~ URI::regexp
+      raise 'serve_https must be a boolean value' unless (['true', 'false'] & [v.to_s]).any?
     end
   end
 
