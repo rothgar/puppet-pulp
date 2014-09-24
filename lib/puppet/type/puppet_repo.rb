@@ -33,7 +33,7 @@ Puppet::Type.newtype(:puppet_repo) do
     end
 
     validate do |v|
-      raise 'serve_http must be a boolean value' unless (['true', 'false'] & [v.to_s]).any?
+      raise 'validate be a boolean value' unless (['true', 'false'] & [v.to_s]).any?
     end
   end
 
@@ -72,7 +72,7 @@ Puppet::Type.newtype(:puppet_repo) do
     end
   end
 
-  newproperty(:rel_url)
+  newproperty(:relative_url)
   newproperty(:feed_ca_cert)
   newproperty(:feed_cert)
   newproperty(:feed_key)
