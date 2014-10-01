@@ -3,20 +3,20 @@ require "#{File.dirname(__FILE__)}/../../../puppet-pulp/pulp_admin"
 Puppet::Type::type(:puppet_repo).provide(:pulp_admin) do
   def create
     pulp_admin.create @resource[:id], {
-      :display_name => @resource[:display_name],
-      :description  => @resource[:description],
-      :feed         => @resource[:feed],
-      :notes        => @resource[:notes],
-      :validate     => @resource[:validate],
-      :queries      => @resource[:queries],
-      :schedules    => @resource[:schedules],
-      :serve_http   => @resource[:serve_http],
-      :serve_https  => @resource[:serve_https],
-      :rel_url      => @resource[:rel_url],
-      :feed_ca_cert => @resource[:feed_ca_cert],
-      :feed_cert    => @resource[:feed_cert],
-      :feed_key     => @resource[:feed_key],
-      :verify_ssl   => @resource[:verify_ssl],
+      :display_name    => @resource[:display_name],
+      :description     => @resource[:description],
+      :feed            => @resource[:feed],
+      :notes           => @resource[:notes],
+      :validate        => @resource[:validate],
+      :queries         => @resource[:queries],
+      :schedules       => @resource[:schedules],
+      :serve_http      => @resource[:serve_http],
+      :serve_https     => @resource[:serve_https],
+      :relative_url    => @resource[:rel_url],
+      :feed_ca_cert    => @resource[:feed_ca_cert],
+      :feed_cert       => @resource[:feed_cert],
+      :feed_key        => @resource[:feed_key],
+      :verify_feed_ssl => @resource[:verify_ssl],
     }
   end
 

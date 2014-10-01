@@ -5,6 +5,9 @@ module PuppetPulp
   class PulpAdmin
     attr_accessor :login, :password
 
+    commands :parr => 'pulp-admin rpm repo'
+    commands :papr => 'pulp-admin puppet repo'
+    
     def initialize(username, password)
       @username = username
       @password = password
@@ -13,7 +16,7 @@ module PuppetPulp
     def create(repo_id, params = {})
       login
 
-      cmd = "pulp-admin puppet repo create --repo-id=\"#{repo_id}\""
+      cmd = "pulp-admin rpm repo create --repo-id=\"#{repo_id}\""
 
       [:display_name,
        :description,
@@ -36,7 +39,7 @@ module PuppetPulp
 
       if params[:schedules]
         params[:schedules].each do |s|
-          output = `pulp-admin puppet repo sync schedules create --repo-id=\"#{repo_id}\" -s \"#{s}\"`
+          output = `pulp-admin rpm repo sync schedules create --repo-id=\"#{repo_id}\" -s \"#{s}\"`
           raise "Could not create schedule: #{output}" unless output =~ /Schedule successfully created/
         end
       end
@@ -44,14 +47,14 @@ module PuppetPulp
 
     def destroy(repo_id)
       login
-      output = `pulp-admin puppet repo delete --repo-id="#{repo_id}"`
+      output = `pulp-admin rpm repo delete --repo-id="#{repo_id}"`
       raise "Could not remove repo: #{output}" unless output =~ /Repository \[#{repo_id}\] successfully deleted/
     end
 
     def repos
       login
 
-      output = `pulp-admin puppet repo list --details`
+      output = `pulp-admin rpm repo list --details`
       repos = parse_repos(output).map do |repo|
         description = repo['Description'] == 'None' ? nil : repo['Description']
         distributors_config = repo['Distributors']['Config']
@@ -89,7 +92,7 @@ module PuppetPulp
         singleton_class = class << result; self end
 
         setter = lambda do |val|
-          `pulp-admin puppet repo update --repo-id=#{props[:id]} #{val}`
+          `pulp-admin rpm repo update --repo-id=#{props[:id]} #{val}`
         end
 
         #getters
@@ -114,16 +117,16 @@ module PuppetPulp
         # Easier to test
         me = self
         singleton_class.send :define_method, :schedules= do |arr|
-          repos = me.send :`, "pulp-admin puppet repo sync schedules list --repo-id=\"#{props[:id]}\""
+          repos = me.send :`, "pulp-admin rpm repo sync schedules list --repo-id=\"#{props[:id]}\""
           repos.split(/\n/).each do |l|
             if l =~ /^Id:\s*(.+)/
-              output = me.send :`, "pulp-admin puppet repo sync schedules delete --repo-id=\"#{props[:id]}\" --schedule-id=\"#{$1}\""
+              output = me.send :`, "pulp-admin rpm repo sync schedules delete --repo-id=\"#{props[:id]}\" --schedule-id=\"#{$1}\""
               raise "Could not delete old schedule: #{output}" unless output =~ /Schedule successfully deleted/
             end
           end
 
           arr.each do |s|
-            output = me.send :`, "pulp-admin puppet repo sync schedules create --repo-id=\"#{props[:id]}\" -s \"#{s}\""
+            output = me.send :`, "pulp-admin rpm repo sync schedules create --repo-id=\"#{props[:id]}\" -s \"#{s}\""
             raise "Could not create schedule: #{output}" unless output =~ /Schedule successfully created/
           end
         end
