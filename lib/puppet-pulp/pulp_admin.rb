@@ -5,9 +5,6 @@ module PuppetPulp
   class PulpAdmin
     attr_accessor :login, :password
 
-    commands :parr => 'pulp-admin rpm repo'
-    commands :papr => 'pulp-admin puppet repo'
-    
     def initialize(username, password)
       @username = username
       @password = password
@@ -22,7 +19,11 @@ module PuppetPulp
        :description,
        :feed,
        :serve_http,
-       :serve_https].each do |m|
+       :serve_https,
+       :relative_url,
+       :feed_ca_cert,
+       :feed_cert,
+       :feed_key].each do |m|
         cmd << " --#{m.to_s.gsub '_', '-'}=\"#{params[m]}\"" unless params[m].nil?
       end
 
@@ -75,6 +76,8 @@ module PuppetPulp
         serve_https = distributors_config['Serve Https'] unless distributors_config.nil?
         serve_https = serve_https == 'True'
 
+        relative_url = repo['Relative URL'].nil? ? { } : repo['Relative URL'] 
+
         props = {
           :id => repo['Id'],
           :display_name => repo['Display Name'],
@@ -84,7 +87,8 @@ module PuppetPulp
           :queries => queries,
           :schedules => schedules,
           :serve_http => serve_http,
-          :serve_https => serve_https
+          :serve_https => serve_https,
+          :relative_url => relative_url,
         }
 
         # UGARY -- We might want to be 1.8-able one day
@@ -104,7 +108,10 @@ module PuppetPulp
          :description,
          :feed,
          :serve_http,
-         :serve_https].each do |m|
+         :serve_https,
+         :relative_url,
+         :feed_cert,
+         :feed_key ].each do |m|
           singleton_class.send :define_method, "#{m}=" do |v|
             setter.call "--#{m.to_s.gsub('_', '-')}=\"#{v}\""
           end
