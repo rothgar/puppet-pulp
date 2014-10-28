@@ -12,6 +12,14 @@ Puppet::Type.newtype(:pulp_repo) do
     end
   end
 
+  newparam(:repo_type) do
+      desc 'Repo content description'
+
+      newvalues(:rpm, :puppet)
+
+      defaultto "rpm"
+  end
+
   newproperty(:display_name) do
       desc 'Pulp display name'
   end
@@ -105,8 +113,13 @@ Puppet::Type.newtype(:pulp_repo) do
     end
   end
 
-   newparam(:login)
-   newparam(:password)
+   newparam(:login) do
+     defaultto "admin"
+   end
+
+    newparam(:password) do
+        defaultto "admin"
+    end
 
   validate do
     fail 'must specify login' if self[:login].to_s.empty?

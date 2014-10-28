@@ -4,6 +4,7 @@ Puppet::Type::type(:pulp_repo).provide(:pulp_admin) do
   def create
     pulp_admin.create @resource[:id], {
       :display_name    => @resource[:display_name],
+      :repo_type       => @resource[:repo_type],
       :description     => @resource[:description],
       :feed            => @resource[:feed],
       :notes           => @resource[:notes],
